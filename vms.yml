@@ -1,0 +1,217 @@
+---
+apiVersion: kubevirt.io/v1alpha3
+kind: VirtualMachine
+metadata:
+  name: bigip0
+  namespace: f5-lb
+  annotations:
+    k8s.v1.cni.cncf.io/networks: bigip0ens2f1vf0
+    k8s.v1.cni.cncf.io/networks: bigip0ens2f1vf1
+  labels:
+    f5type: bigip-ve
+spec:
+  runStrategy: Always
+  template:
+    metadata:
+      labels:
+        f5type: bigip-ve
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: worker000
+      domain:
+        resources:
+          requests:
+            memory: "8192Mi"
+            cpu: "4"
+        devices:
+          disks:
+          - name: bigip0-volume
+            disk:
+              bus: sata
+          - name: cloudinitvolume
+            disk:
+              bus: virtio
+          interfaces:
+          - name: mgmt
+            bridge: {}
+          - name: ha
+            bridge: {}
+          - name: int-sriov
+            macAddress: 02:02:02:02:05:01
+            sriov: {}
+          - name: ext-sriov
+            macAddress: 02:02:02:02:05:02
+            sriov: {}
+      volumes:
+      - name: bigip0-volume
+        dataVolume:
+          name: bigip0-volume
+      - name: cloudinitvolume
+        cloudInitConfigDrive:
+          userData: |-
+            #cloud-config
+            write_files:
+              - path: /config/cloud/config.sh
+                permissions: 0755
+                owner: root:root
+                content: |
+                  #!/bin/bash
+                  echo "Hello World" >> /var/tmp/cloud-init-output
+                  source /usr/lib/bigstart/bigip-ready-functions
+                  wait_bigip_ready
+                  LOGGER_TAG="OpenShift-cloud-init"
+                          LOGGER_CMD="logger -t $LOGGER_TAG"
+                          function log() {
+                          echo "$1" | eval "$LOGGER_CMD"
+                          }
+                  tmsh save /sys config
+                  log "Setting up mgmt IP address and GW..."
+                  tmsh modify sys global-settings mgmt-dhcp disabled
+                  tmsh create sys management-ip 192.168.223.100/24
+                  tmsh create sys management-route default gateway 192.168.223.1
+                  tmsh modify sys global-settings hostname bigip0.apps.muralitest973.myocp4.com
+                  log "Setting up VLANS and selfIPs..."
+                  tmsh create net vlan int-sriov interfaces add { 1.2 { untagged } } tag 4093
+                  tmsh create net self 192.168.222.100/24 vlan int-sriov allow-service all
+                  log "Creating paritions.."
+                  tmsh create auth partition kubernetes default-route-domain 0
+                  log "Changing the root and admin passwords..."
+                  echo -en "changepwd\nchangepwd\n" | tmsh modify auth password root
+                  echo -en "changepwd\nchangepwd\n" | tmsh modify auth user admin prompt-for-password
+                  sleep 30
+                  tmsh modify /sys global-settings gui-setup disabled
+                  tmsh modify ltm global-settings general snat-packet-forward enabled
+                  tmsh modify sys db connection.vlankeyed value disable
+                  tmsh modify sys db arp.verifyreturnroute value disable
+                  tmsh modify sys disk directory /shared new-size 10485770
+                  tmsh modify sys disk directory /var new-size 10485770
+                  tmsh save sys config
+                  log "cloud-init configuration is saved..."
+                  sleep 60
+                  reboot
+            runcmd:
+              # NOTE: Commands must be non-blocking so send long running commands (polling/waiting for mcpd) to the background
+              - /config/cloud/config.sh &
+      networks:
+      - name: mgmt
+        multus:
+          networkName: bigip-mgmt
+      - name: ha
+        multus:
+          networkName: bigip-ha
+      - name: int-sriov
+        multus:
+          networkName: bigip0ens2f1vf0
+      - name: ext-sriov
+        multus:
+          networkName: bigip0ens2f1vf1
+
+
+---
+apiVersion: kubevirt.io/v1alpha3
+kind: VirtualMachine
+metadata:
+  name: bigip1
+  namespace: f5-lb
+  annotations:
+    k8s.v1.cni.cncf.io/networks: bigip1ens2f1vf2
+    k8s.v1.cni.cncf.io/networks: bigip1ens2f1vf3
+  labels:
+    f5type: bigip-ve
+spec:
+  runStrategy: Always
+  template:
+    metadata:
+      labels:
+        f5type: bigip-ve
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: worker001
+      domain:
+        resources:
+          requests:
+            memory: "8192Mi"
+            cpu: "4"
+        devices:
+          disks:
+          - name: bigip1-volume
+            disk:
+              bus: sata
+          - name: cloudinitvolume
+            disk:
+              bus: virtio
+          interfaces:
+          - name: mgmt
+            bridge: {}
+          - name: ha
+            bridge: {}
+          - name: int-sriov
+            macAddress: 02:02:02:02:05:03
+            sriov: {}
+          - name: ext-sriov
+            macAddress: 02:02:02:02:05:04
+            sriov: {}
+      volumes:
+      - name: bigip1-volume
+        dataVolume:
+          name: bigip1-volume
+      - name: cloudinitvolume
+        cloudInitConfigDrive:
+          userData: |-
+            #cloud-config
+            write_files:
+              - path: /config/cloud/config.sh
+                permissions: 0755
+                owner: root:root
+                content: |
+                  #!/bin/bash
+                  echo "Hello World" >> /var/tmp/cloud-init-output
+                  source /usr/lib/bigstart/bigip-ready-functions
+                  wait_bigip_ready
+                  LOGGER_TAG="OpenShift-cloud-init"
+                          LOGGER_CMD="logger -t $LOGGER_TAG"
+                          function log() {
+                          echo "$1" | eval "$LOGGER_CMD"
+                          }
+                  tmsh save /sys config
+                  log "Setting up mgmt IP address and GW..."
+                  tmsh modify sys global-settings mgmt-dhcp disabled
+                  tmsh create sys management-ip 192.168.223.101/24
+                  tmsh create sys management-route default gateway 192.168.223.1
+                  tmsh modify sys global-settings hostname bigip1.apps.muralitest973.myocp4.com
+                  log "Setting up VLANS and selfIPs..."
+                  tmsh create net vlan int-sriov interfaces add { 1.2 { untagged } } tag 4093
+                  tmsh create net self 192.168.222.101/24 vlan int-sriov allow-service all
+                  log "Creating paritions.."
+                  tmsh create auth partition kubernetes default-route-domain 0
+                  log "Changing the root and admin passwords..."
+                  echo -en "changepwd\nchangepwd\n" | tmsh modify auth password root
+                  echo -en "changepwd\nchangepwd\n" | tmsh modify auth user admin prompt-for-password
+                  sleep 30
+                  tmsh modify /sys global-settings gui-setup disabled
+                  tmsh modify ltm global-settings general snat-packet-forward enabled
+                  tmsh modify sys db connection.vlankeyed value disable
+                  tmsh modify sys db arp.verifyreturnroute value disable
+                  tmsh modify sys disk directory /shared new-size 10485770
+                  tmsh modify sys disk directory /var new-size 10485770
+                  tmsh save sys config
+                  log "cloud-init configuration is saved..."
+                  sleep 60
+                  reboot
+            runcmd:
+              # NOTE: Commands must be non-blocking so send long running commands (polling/waiting for mcpd) to the background
+              - /config/cloud/config.sh &
+      networks:
+      - name: mgmt
+        multus:
+          networkName: bigip-mgmt
+      - name: ha
+        multus:
+          networkName: bigip-ha
+      - name: int-sriov
+        multus:
+          networkName: bigip1ens2f1vf2
+      - name: ext-sriov
+        multus:
+          networkName: bigip1ens2f1vf3
+
