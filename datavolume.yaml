@@ -1,0 +1,41 @@
+---
+apiVersion: cdi.kubevirt.io/v1alpha1
+kind: DataVolume
+metadata:
+  name: bigip0-volume
+  namespace: f5-lb
+  annotations:
+    kubevirt.io/provisionOnNode: worker000
+spec:
+  source:
+    registry:
+      url: "docker://docker-registry.upshift.redhat.com/ocp-edge-qe/bigip:15.1.0.3-EHF"
+      certConfigMap: my-registry-certs
+  pvc:
+    storageClassName: "hostpath-provisioner"
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 53Gi
+
+---
+apiVersion: cdi.kubevirt.io/v1alpha1
+kind: DataVolume
+metadata:
+  name: bigip1-volume
+  namespace: f5-lb
+  annotations:
+    kubevirt.io/provisionOnNode: worker001
+spec:
+  source:
+    registry:
+      url: "docker://docker-registry.upshift.redhat.com/ocp-edge-qe/bigip:15.1.0.3-EHF"
+      certConfigMap: my-registry-certs
+  pvc:
+    storageClassName: "hostpath-provisioner"
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 53Gi
