@@ -1,0 +1,148 @@
+---
+bigip_working_dir: "{{ ansible_facts['user_dir'] }}/bigip-deploy"
+bigip_kubeconfig: "{{ ansible_facts['user_dir'] }}/clusterconfigs/auth/kubeconfig"
+bigip_registry_host_name: registry.{{ cluster_domain }}
+bigip_registry_port: 5000
+bigip_vms: { "bigip0": { "mgmt_ip": "192.168.223.100/24", "mgmt_gateway": "192.168.223.1", "int_sriov_ip": "192.168.222.100/24", "int_sriov_mac": "02:02:02:02:05:01", "ext_sriov_mac": "02:02:02:02:05:02", "license_key": "SGJVQ-MWRFS-UVBWU-NFKCX-NMDOIMF" }, "bigip1": { "mgmt_ip": "192.168.223.101/24", "mgmt_gateway": "192.168.223.1", "int_sriov_ip": "192.168.222.101/24", "int_sriov_mac": "02:02:02:02:05:03", "ext_sriov_mac": "02:02:02:02:05:04", "license_key": "UVFIT-RVTVT-NAPUX-DPIVS-LNPEMYB" } }
+bigip_namespace: "f5-lb"
+bigip_mcp_pool_name: "worker-lb"
+bigip_dv_accesskey: "" # not required - data volume secrets
+bigip_dv_secretkey: "" # not required - data volume secrets
+bigip_bridges: { "mgmt": { "interface": "ens2f0", "vlan_id": "100" }, "ha": { "interface": "ens2f0", "vlan_id": "101" } }
+bigip_sriov_int: "ens2f1"
+bigip_sriov_network_ipam_address: "192.168.222.50/24" # An IP from BM external network
+bigip_sriov_network_ipam_gateway: "192.168.222.1" # GW of external network
+bigip_user: "admin"
+bigip_password: "changepwd"
+bigip_base_domain: "apps.muralitest973.myocp4.com"
+
+
+bigip_ntp_server: "192.168.223.1"
+bigip_ipv6_snat_pool: ['2620:52:0:2e31::20', '2620:52:0:2e31::30']
+bigip_upstream_dns_snat_pool: ['192.168.222.160']
+bigip_upstream_dns: '192.168.222.1'
+bigip_dns46_vs: '192.168.222.161'
+bigip_upstream_vs: '192.168.222.162'
+bigip_as3_a1_virtual_address: ["2620:52:0:2e30::3", "192.168.222.170"]
+bigip_as3_a2_virtual_address: ["2620:52:0:2e31::3"]
+bigip_wsn_ir_route: { "address": "2620:52:0:2592:3617:ebff:fee6:4ba9", "netmask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff", "gateway": "2620:52:0:2e31::fe" }
+
+
+#########################
+## F5 Static Variables ##
+#########################
+
+#Path to ISO files on local machine where playbook is executed
+
+##### Provisioning #####
+
+##### DB Variables #####
+
+##### Create Partitions and Route Domains #####
+
+##### Profiles and Monitors #####
+
+# Dictionary of traffic groups for quick reference
+traffic_group:
+  self: "/Common/traffic-group-local-only"
+  float: "/Common/traffic-group-1"
+
+##### HA Config #####
+failover: "lb-cluster"
+failover_peer: "bigip0.apps.muralitest973.myocp4.com"
+failover_peer_ip: "192.168.229.1"
+
+#######################
+## DYNAMIC VARIABLES ##
+#######################
+
+#dictionary of all VLANs and interfaces.  Add addtional items for addtional VLANs/Interfaces
+untagged_vlan_info:
+  - { name: 'HA', mtu: '1372', interface: '1.1', partition: 'Common', tag: '1323' }
+
+tagged_vlan_info:
+  - { name: 'WSN_EXT_IE', mtu: '1372', interface: '1.2', partition: 'Common', tag: '102' }
+  - { name: 'WSN_EXT_IR', mtu: '1372', interface: '1.2', partition: 'Common', tag: '103' }
+  - { name: 'WSN_EXT_Inf', mtu: '1372', interface: '1.2', partition: 'Common', tag: '104' }
+  - { name: 'EDN_EXT', mtu: '1372', interface: '1.2', partition: 'Common', tag: '105' }
+  - { name: 'RAN_EXT', mtu: '1372', interface: '1.2', partition: 'Common', tag: '106' }
+
+vxlan_tunnel_info:
+  bigip0:
+    - { name: 'ocp-ingress-1', local_address: '192.168.222.150', secondary_address: '192.168.222.130', key: '4097', mtu: '1372', profile: 'ocp-flood' }
+    - { name: 'ocp-egress-1', local_address: '192.168.222.151', secondary_address: '192.168.222.131', key: '4097', mtu: '1372', profile: 'ocp-flood' }
+    - { name: 'ocp-egress-2', local_address: '192.168.222.152', secondary_address: '192.168.222.132', key: '4097', mtu: '1372', profile: 'ocp-flood' }
+
+  bigip1:
+    - { name: 'ocp-ingress-1', local_address: '192.168.222.150', secondary_address: '192.168.222.140', key: '4097', mtu: '1372', profile: 'ocp-flood' }
+    - { name: 'ocp-egress-1', local_address: '192.168.222.151', secondary_address: '192.168.222.141', key: '4097', mtu: '1372', profile: 'ocp-flood' }
+    - { name: 'ocp-egress-2', local_address: '192.168.222.152', secondary_address: '192.168.222.142', key: '4097', mtu: '1372', profile: 'ocp-flood' }
+
+under_self_ips:
+  bigip1:
+    - { type: 'self', ip: 'v4', vlan: int-sriov, address: '192.168.222.140', mask: '255.255.255.0', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: int-sriov, address: '192.168.222.141', mask: '255.255.255.0', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: int-sriov, address: '192.168.222.142', mask: '255.255.255.0', allow: 'all' }
+
+    - { type: 'float', ip: 'v4', vlan: int-sriov, address: '192.168.222.150', mask: '255.255.255.0', allow: 'all' }
+    - { type: 'float', ip: 'v4', vlan: int-sriov, address: '192.168.222.151', mask: '255.255.255.0', allow: 'all' }
+    - { type: 'float', ip: 'v4', vlan: int-sriov, address: '192.168.222.152', mask: '255.255.255.0', allow: 'all' }
+
+  bigip0:
+    - { type: 'self', ip: 'v4', vlan: int-sriov, address: '192.168.222.130', mask: '255.255.255.0', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: int-sriov, address: '192.168.222.131', mask: '255.255.255.0', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: int-sriov, address: '192.168.222.132', mask: '255.255.255.0', allow: 'all' }
+
+over_self_ips:
+  bigip1:
+    - { type: 'self', ip: 'v4', vlan: ocp-ingress-1, address: '192.168.13.102', mask: '255.255.255.252', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: ocp-egress-1, address: '192.168.14.102', mask: '255.255.255.252', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: ocp-egress-2, address: '192.168.15.102', mask: '255.255.255.252', allow: 'all' }
+
+    - { type: 'float', ip: 'v4', vlan: ocp-ingress-1, address: '192.168.13.100', mask: '255.255.255.252', allow: 'all' }
+    - { type: 'float', ip: 'v4', vlan: ocp-egress-1, address: '192.168.14.100', mask: '255.255.255.252', allow: 'all' }
+    - { type: 'float', ip: 'v4', vlan: ocp-egress-2, address: '192.168.15.100', mask: '255.255.255.252', allow: 'all' }
+
+  bigip0:
+    - { type: 'self', ip: 'v4', vlan: ocp-ingress-1, address: '192.168.13.101', mask: '255.255.255.252', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: ocp-egress-1, address: '192.168.14.101', mask: '255.255.255.252', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: ocp-egress-2, address: '192.168.15.101', mask: '255.255.255.252', allow: 'all' }
+
+self_ips:
+  bigip0:
+    - { type: 'self', ip: 'v4', vlan: HA, address: '192.168.229.1', mask: '255.255.255.128', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: WSN_EXT_IE, address: '192.168.224.1', mask: '255.255.255.0', allow: 'all' }
+    - { type: 'self', ip: 'v6', vlan: WSN_EXT_IE, address: '2620:52:0:2e30::1', mask: 'ffff:ffff:ffff:ffff::', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: WSN_EXT_IR, address: '192.168.225.1', mask: '255.255.255.0', allow: 'all' }
+    - { type: 'self', ip: 'v6', vlan: WSN_EXT_IR, address: '2620:52:0:2e31::1', mask: 'ffff:ffff:ffff:ffff::', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: WSN_EXT_Inf, address: '192.168.226.1', mask: '255.255.255.0', allow: 'all' }
+    - { type: 'self', ip: 'v6', vlan: WSN_EXT_Inf, address: '2620:52:0:2e32::1', mask: 'ffff:ffff:ffff:ffff::', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: EDN_EXT, address: '192.168.227.1', mask: '255.255.255.128', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: RAN_EXT, address: '192.168.228.1', mask: '255.255.255.0', allow: 'all' }
+    - { type: 'self', ip: 'v6', vlan: RAN_EXT, address: '2620:52:0:2e33::1', mask: 'ffff:ffff:ffff:ffff::', allow: 'all' }
+
+
+  bigip1:
+    - { type: 'self', ip: 'v4', vlan: HA, address: '192.168.229.2', mask: '255.255.255.128', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: WSN_EXT_IE, address: '192.168.224.2', mask: '255.255.255.0', allow: 'all' }
+    - { type: 'self', ip: 'v6', vlan: WSN_EXT_IE, address: '2620:52:0:2e30::2', mask: 'ffff:ffff:ffff:ffff::', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: WSN_EXT_IR, address: '192.168.225.2', mask: '255.255.255.0', allow: 'all' }
+    - { type: 'self', ip: 'v6', vlan: WSN_EXT_IR, address: '2620:52:0:2e31::2', mask: 'ffff:ffff:ffff:ffff::', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: WSN_EXT_Inf, address: '192.168.226.2', mask: '255.255.255.0', allow: 'all' }
+    - { type: 'self', ip: 'v6', vlan: WSN_EXT_Inf, address: '2620:52:0:2e32::2', mask: 'ffff:ffff:ffff:ffff::', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: EDN_EXT, address: '192.168.227.2', mask: '255.255.255.128', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: RAN_EXT, address: '192.168.228.2', mask: '255.255.255.0', allow: 'all' }
+    - { type: 'self', ip: 'v6', vlan: RAN_EXT, address: '2620:52:0:2e33::2', mask: 'ffff:ffff:ffff:ffff::', allow: 'all' }
+
+    - { type: 'float', ip: 'v4', vlan: WSN_EXT_IE, address: '192.168.224.3', mask: '255.255.255.0', allow: 'all' }
+    - { type: 'float', ip: 'v6', vlan: WSN_EXT_IE, address: '2620:52:0:2e30::3', mask: 'ffff:ffff:ffff:ffff::', allow: 'all' }
+    - { type: 'float', ip: 'v4', vlan: WSN_EXT_IR, address: '192.168.225.3', mask: '255.255.255.0', allow: 'all' }
+    - { type: 'float', ip: 'v6', vlan: WSN_EXT_IR, address: '2620:52:0:2e31::3', mask: 'ffff:ffff:ffff:ffff::', allow: 'all' }
+    - { type: 'float', ip: 'v4', vlan: WSN_EXT_Inf, address: '192.168.226.3', mask: '255.255.255.0', allow: 'all' }
+    - { type: 'float', ip: 'v6', vlan: WSN_EXT_Inf, address: '2620:52:0:2e32::3', mask: 'ffff:ffff:ffff:ffff::', allow: 'all' }
+    - { type: 'float', ip: 'v4', vlan: EDN_EXT, address: '192.168.227.3', mask: '255.255.255.128', allow: 'all' }
+    - { type: 'float', ip: 'v4', vlan: RAN_EXT, address: '192.168.228.3', mask: '255.255.255.0', allow: 'all' }
+    - { type: 'float', ip: 'v6', vlan: RAN_EXT, address: '2620:52:0:2e33::3', mask: 'ffff:ffff:ffff:ffff::', allow: 'all' }
+
+####icall_script####
+icall_definition: "set nodelist \"\"\n        set nodecounter 0\n        tmsh::modify cli global-settings service number\n        #tmsh::log \"iCall: Starting to enumerate existing vs objects...\"\n        foreach partition [tmsh::get_config auth partition] {\n          set partition \"/[tmsh::get_name $partition]\"\n          #tmsh::log \"iCall: Processing Partition: $partition\"\n          tmsh::cd $partition\n          set vs [tmsh::get_config ltm virtual recursive]\n          #tmsh::log \"$vs\"\n          foreach v $vs {\n              set v_name [tmsh::get_name $v]\n              #tmsh::log \"Processing VS : $partition/$v_name\"\n              set v_attrs [tmsh::get_status ltm virtual $v_name]\n              foreach a $v_attrs {\n                  set dest [tmsh::get_field_value $a \"destination\"]\n                  #tmsh::log \"Destination : $dest\"\n                  append nodelist \"\\\"$dest\\\" \\{ data \\\"$partition/$v_name\\\" \\}\\n\"\n              }\n              incr nodecounter\n          }\n          #tmsh::log \"Finished Partition: $partition\"\n        }\n        tmsh::cd \"/Common\"\n        if { not ([tmsh::list /ltm data-group] contains \"ltm data-group internal DG_IP_2_VS\") } then {\n            tmsh::log \"iCall: Created the data-group \\\"DG_IP_2_VS\\\".\"\n            tmsh::create /ltm data-group internal \"DG_IP_2_VS\" type \"string\"\n        } else {\n            #tmsh::log \"iCall: The DataGroup does exist.\"\n        }\n        tmsh::log \"nodelist: $nodelist\"\n        if { $nodecounter > 0 } then {\n            eval \"tmsh::modify /ltm data-group internal DG_IP_2_VS \\{ records replace-all-with \\{ $nodelist \\} \\}\"\n        }\n        tmsh::log \"iCall: Updated the data-group DG_IP_2_VS with \\\"$nodecounter\\\" entries.\"\n"
