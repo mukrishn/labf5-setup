@@ -1,0 +1,44 @@
+---
+apiVersion: nmstate.io/v1alpha1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: bigip-bridges
+spec:
+  nodeSelector:
+    node-role.kubernetes.io/worker: ""
+  desiredState:
+    interfaces:
+    - name: ens2f1.100
+      type: vlan
+      state: up
+      vlan:
+        base-iface: ens2f1
+        id: 100
+
+    - name: bigip-mgmt
+      description: Linux bridge with ens2f1 vlan100 as a port!
+      type: linux-bridge
+      state: up
+      bridge:
+        options:
+          stp:
+            enabled: false
+        port:
+        - name: ens2f1.100
+    - name: ens2f1.101
+      type: vlan
+      state: up
+      vlan:
+        base-iface: ens2f1
+        id: 101
+
+    - name: bigip-ha
+      description: Linux bridge with ens2f1 vlan101 as a port!
+      type: linux-bridge
+      state: up
+      bridge:
+        options:
+          stp:
+            enabled: false
+        port:
+        - name: ens2f1.101
