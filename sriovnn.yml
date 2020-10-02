@@ -1,0 +1,53 @@
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+ name: bigip0ens2f1vf0 
+ namespace: openshift-sriov-network-operator
+spec:
+ networkNamespace:  f5-lb
+ ipam: '{"type": "static","addresses":[{"address":"192.168.222.50/24","gateway":"192.168.222.1"}]}'
+ spoofChk: "off"
+ trust: "on"
+ resourceName: bigip0ens2f1vf0
+
+
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+ name: bigip0ens2f1vf1
+ namespace: openshift-sriov-network-operator
+spec:
+ networkNamespace:  f5-lb
+ ipam: '{"type": "static","addresses":[{"address":"192.168.222.50/24","gateway":"192.168.222.1"}]}'
+ spoofChk: "off"
+ trust: "on"
+ resourceName: bigip0ens2f1vf1
+
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+ name: bigip1ens2f1vf2
+ namespace: openshift-sriov-network-operator
+spec:
+ networkNamespace:  f5-lb
+ ipam: '{"type": "static","addresses":[{"address":"192.168.222.50/24","gateway":"192.168.222.1"}]}'
+ spoofChk: "off"
+ trust: "on"
+ resourceName: bigip1ens2f1vf2
+
+
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+ name: bigip1ens2f1vf3
+ namespace: openshift-sriov-network-operator
+spec:
+ networkNamespace:  f5-lb
+ ipam: '{"type": "static","addresses":[{"address":"192.168.222.50/24","gateway":"192.168.222.1"}]}'
+ spoofChk: "off"
+ trust: "on"
+ resourceName: bigip1ens2f1vf3
