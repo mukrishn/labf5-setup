@@ -1,0 +1,13 @@
+bigip:
+  hosts:
+    bigip0.apps.muralitest973.myocp4.com:
+      ansible_host: "192.168.223.100"
+      license_key: "SGJVQ-MWRFS-UVBWU-NFKCX-NMDOIMF"
+      bigip_user: "admin"
+      bigip_password: "changepwd"
+
+    bigip1.apps.muralitest973.myocp4.com:
+      ansible_host: "192.168.223.101"
+      license_key: "UVFIT-RVTVT-NAPUX-DPIVS-LNPEMYB"
+      bigip_user: "admin"
+      bigip_password: "changepwd"
