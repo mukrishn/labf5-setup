@@ -1,0 +1,62 @@
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+ name: bigip0ens2f1vf0
+ namespace: openshift-sriov-network-operator
+spec:
+ resourceName: bigip0ens2f1vf0
+ nodeSelector:      
+   node-role.kubernetes.io/worker: ""
+ numVfs: 4
+ nicSelector:
+   pfNames: ["ens2f1#0-0"]
+ deviceType: vfio-pci
+
+ 
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+ name: bigip0ens2f1vf1
+ namespace: openshift-sriov-network-operator
+spec:
+ resourceName: bigip0ens2f1vf1
+ nodeSelector:
+   node-role.kubernetes.io/worker: ""
+ numVfs: 4
+ nicSelector:
+   pfNames: ["ens2f1#1-1"]
+ deviceType: vfio-pci
+
+
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+ name: bigip1ens2f1vf2
+ namespace: openshift-sriov-network-operator
+spec:
+ resourceName: bigip1ens2f1vf2
+ nodeSelector:
+   node-role.kubernetes.io/worker: ""
+ numVfs: 4
+ nicSelector:
+   pfNames: ["ens2f1#2-2"]
+ deviceType: vfio-pci
+
+
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+ name: bigip1ens2f1vf3
+ namespace: openshift-sriov-network-operator
+spec:
+ resourceName: bigip1ens2f1vf3
+ nodeSelector:
+   node-role.kubernetes.io/worker: ""
+ numVfs: 4
+ nicSelector:
+   pfNames: ["ens2f1#3-3"]
+ deviceType: vfio-pci
