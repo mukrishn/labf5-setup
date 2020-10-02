@@ -200,14 +200,14 @@
       bigip_irule:
         module: ltm
         name: DNS46
-        src: ./roles/bigip-deploy/tasks/stablcurco1_dns46.tcl
+        src: ./stablcurco1_dns46.tcl
       tags: dns_irule
     
     - name: Add NAT irules
       bigip_irule:
         module: ltm
         name: NAT46
-        src: ./roles/bigip-deploy/tasks/stablcurco1_nat46.tcl
+        src: ./stablcurco1_nat46.tcl
       tags: nat_irule
     
     - name: Add icall script
