@@ -23,7 +23,7 @@ bigip_upstream_dns_snat_pool: ['192.168.222.160']
 bigip_upstream_dns: '192.168.222.1'
 bigip_dns46_vs: '192.168.222.161'
 bigip_upstream_vs: '192.168.222.162'
-bigip_as3_a1_virtual_address: ["2620:52:0:2e30::3", "192.168.222.170"]
+bigip_as3_a1_virtual_address: ["2620:52:0:2e30::3", "192.168.222.150"]
 bigip_as3_a2_virtual_address: ["2620:52:0:2e31::3"]
 bigip_wsn_ir_route: { "address": "2620:52:0:2592:3617:ebff:fee6:4ba9", "netmask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff", "gateway": "2620:52:0:2e31::fe" }
 
