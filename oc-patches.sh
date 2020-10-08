@@ -23,3 +23,15 @@ spec:
     type: Raw
 EOF
 )"
+
+oc patch dns.operator/default --type='merge' -p "$(cat <<- EOF
+  spec:
+    servers:
+    - forwardPlugin:
+        upstreams:
+        - 192.168.222.161
+      name: f5nat64dns
+      zones:
+      - nat64.murali722.myocp4.com
+EOF
+)"
