@@ -1,0 +1,248 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bigip0-cis-ocp-egress-2
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: bigip0-cis-ocp-egress-2
+  # DO NOT INCREASE REPLICA COUNT Please
+  replicas: 1
+  template:
+    metadata:
+      name: bigip0-cis-ocp-egress-2
+      labels:
+        app: bigip0-cis-ocp-egress-2
+    spec:
+      # Name of the Service Account bound to a Cluster Role with the required
+      # permissions
+      serviceAccountName: k8s-bigip-ctlr
+      containers:
+        - name: k8s-bigip-ctlr
+          image: "f5networks/k8s-bigip-ctlr:2.0"
+          imagePullPolicy: Always
+          env:
+            - name: BIGIP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  # Replace with the name of the Secret containing your login
+                  # credentials
+                  name: bigip-login
+                  key: username
+            - name: BIGIP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  # Replace with the name of the Secret containing your login
+                  # credentials
+                  name: bigip-login
+                  key: password
+          command: ["/app/bin/k8s-bigip-ctlr"]
+          args: [
+            # See the k8s-bigip-ctlr documentation for information about
+            # all config options
+            # https://clouddocs.f5.com/products/connectors/k8s-bigip-ctlr/latest
+            "--bigip-username=$(BIGIP_USERNAME)",
+            "--bigip-password=$(BIGIP_PASSWORD)",
+            "--bigip-url=192.168.223.100",
+            "--bigip-partition=kubernetes",
+            "--insecure=true",
+            "--as3-validation=true",
+            "--manage-ingress=false",
+            "--manage-routes=false",
+            "--custom-resource-mode=false",
+            "--manage-configmaps=true",
+            "--log-level=DEBUG",
+            "--log-as3-response=true",
+            "--pool-member-type=cluster",
+            "--namespace=nat46",
+            "--openshift-sdn-name=/Common/ocp-egress-2"
+            ]
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bigip1-cis-ocp-egress-2
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: bigip1-cis-ocp-egress-2
+  # DO NOT INCREASE REPLICA COUNT Please
+  replicas: 1
+  template:
+    metadata:
+      name: bigip1-cis-ocp-egress-2
+      labels:
+        app: bigip1-cis-ocp-egress-2
+    spec:
+      # Name of the Service Account bound to a Cluster Role with the required
+      # permissions
+      serviceAccountName: k8s-bigip-ctlr
+      containers:
+        - name: k8s-bigip-ctlr
+          image: "f5networks/k8s-bigip-ctlr:2.0"
+          imagePullPolicy: Always
+          env:
+            - name: BIGIP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  # Replace with the name of the Secret containing your login
+                  # credentials
+                  name: bigip-login
+                  key: username
+            - name: BIGIP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  # Replace with the name of the Secret containing your login
+                  # credentials
+                  name: bigip-login
+                  key: password
+          command: ["/app/bin/k8s-bigip-ctlr"]
+          args: [
+            # See the k8s-bigip-ctlr documentation for information about
+            # all config options
+            # https://clouddocs.f5.com/products/connectors/k8s-bigip-ctlr/latest
+            "--bigip-username=$(BIGIP_USERNAME)",
+            "--bigip-password=$(BIGIP_PASSWORD)",
+            "--bigip-url=192.168.223.101",
+            "--bigip-partition=kubernetes",
+            "--insecure=true",
+            "--as3-validation=true",
+            "--manage-ingress=false",
+            "--manage-routes=false",
+            "--custom-resource-mode=false",
+            "--manage-configmaps=true",
+            "--log-level=DEBUG",
+            "--log-as3-response=true",
+            "--pool-member-type=cluster",
+            "--namespace=nat46",
+            "--openshift-sdn-name=/Common/ocp-egress-2"
+            ]
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bigip0-cis-ocp-ingress-1
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: bigip0-cis-ocp-ingress-1
+  # DO NOT INCREASE REPLICA COUNT Please
+  replicas: 1
+  template:
+    metadata:
+      name: bigip0-cis-ocp-ingress-1
+      labels:
+        app: bigip0-cis-ocp-ingress-1
+    spec:
+      # Name of the Service Account bound to a Cluster Role with the required
+      # permissions
+      serviceAccountName: k8s-bigip-ctlr
+      containers:
+        - name: k8s-bigip-ctlr
+          image: "f5networks/k8s-bigip-ctlr:2.0"
+          imagePullPolicy: Always
+          env:
+            - name: BIGIP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  # Replace with the name of the Secret containing your login
+                  # credentials
+                  name: bigip-login
+                  key: username
+            - name: BIGIP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  # Replace with the name of the Secret containing your login
+                  # credentials
+                  name: bigip-login
+                  key: password
+          command: ["/app/bin/k8s-bigip-ctlr"]
+          args: [
+            # See the k8s-bigip-ctlr documentation for information about
+            # all config options
+            # https://clouddocs.f5.com/products/connectors/k8s-bigip-ctlr/latest
+            "--bigip-username=$(BIGIP_USERNAME)",
+            "--bigip-password=$(BIGIP_PASSWORD)",
+            "--bigip-url=192.168.223.100",
+            "--bigip-partition=kubernetes",
+            "--insecure=true",
+            "--as3-validation=true",
+            "--manage-ingress=false",
+            "--manage-routes=false",
+            "--custom-resource-mode=false",
+            "--manage-configmaps=true",
+            "--log-level=DEBUG",
+            "--log-as3-response=true",
+            "--pool-member-type=cluster",
+            "--namespace=nat46",
+            "--openshift-sdn-name=/Common/ocp-ingress-1"
+            ]
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bigip1-cis-ocp-ingress-1
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: bigip1-cis-ocp-ingress-1
+  # DO NOT INCREASE REPLICA COUNT Please
+  replicas: 1
+  template:
+    metadata:
+      name: bigip1-cis-ocp-ingress-1
+      labels:
+        app: bigip1-cis-ocp-ingress-1
+    spec:
+      # Name of the Service Account bound to a Cluster Role with the required
+      # permissions
+      serviceAccountName: k8s-bigip-ctlr
+      containers:
+        - name: k8s-bigip-ctlr
+          image: "f5networks/k8s-bigip-ctlr:2.0"
+          imagePullPolicy: Always
+          env:
+            - name: BIGIP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  # Replace with the name of the Secret containing your login
+                  # credentials
+                  name: bigip-login
+                  key: username
+            - name: BIGIP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  # Replace with the name of the Secret containing your login
+                  # credentials
+                  name: bigip-login
+                  key: password
+          command: ["/app/bin/k8s-bigip-ctlr"]
+          args: [
+            # See the k8s-bigip-ctlr documentation for information about
+            # all config options
+            # https://clouddocs.f5.com/products/connectors/k8s-bigip-ctlr/latest
+            "--bigip-username=$(BIGIP_USERNAME)",
+            "--bigip-password=$(BIGIP_PASSWORD)",
+            "--bigip-url=192.168.223.101",
+            "--bigip-partition=kubernetes",
+            "--insecure=true",
+            "--as3-validation=true",
+            "--manage-ingress=false",
+            "--manage-routes=false",
+            "--custom-resource-mode=false",
+            "--manage-configmaps=true",
+            "--log-level=DEBUG",
+            "--log-as3-response=true",
+            "--pool-member-type=cluster",
+            "--namespace=nat46",
+            "--openshift-sdn-name=/Common/ocp-ingress-1"
+            ]
+
