@@ -1,0 +1,109 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nat46
+  annotations:
+    k8s.ovn.org/hybrid-overlay-external-gw: 192.168.15.100
+    k8s.ovn.org/hybrid-overlay-vtep: 192.168.222.152          
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: f5-hello-world
+  namespace: nat46
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: f5-hello-world
+  template:
+    metadata:
+      labels:
+        app: f5-hello-world
+      #annotations:
+      #  k8s.v1.cni.cncf.io/networks: '[{"name": "workercnfens1f1vf0", "namespace": "nat46", "mac": "20:04:0f:f1:88:06","ips": ["10.46.48.6/24", "2620:52:0:2e30::6/64"]}]'
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: worker000
+      containers:
+      - env:
+        - name: service_name
+          value: f5-hello-world
+        image: rhscl/httpd-24-rhel7:latest
+        imagePullPolicy: Always
+        name: f5-hello-world
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: f5-hello-world
+  namespace: nat46
+  labels:
+    app: f5-hello-world
+    cis.f5.com/as3-tenant: AS3
+    cis.f5.com/as3-app: A1
+    cis.f5.com/as3-pool: web_pool
+spec:
+  ports:
+  - name: f5-hello-world
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  type: NodePort
+  selector:
+    app: f5-hello-world
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: f5-as3-declaration
+  namespace: nat46
+  labels:
+    f5type: virtual-server
+    as3: "true"
+data:
+  template: |
+    {
+        "class": "AS3",
+        "declaration": {
+            "class": "ADC",
+            "schemaVersion": "3.13.0",
+            "id": "urn:uuid:33045210-3ab8-4636-9b2a-c98d22ab915d",
+            "label": "https",
+            "remark": "A1 Template",
+            "AS3": {
+                "class": "Tenant",
+                "A1": {
+                    "class": "Application",
+                    "template": "http",
+                    "serviceMain": {
+                        "class": "Service_HTTP",
+                        "remark": "a1",
+                        "virtualAddresses": [
+                            "192.168.222.150"
+                        ],
+                        "pool": "web_pool"
+                    },
+                    "web_pool": {
+                        "class": "Pool",
+                        "monitors": [
+                            "http"
+                        ],
+                        "members": [
+                            {
+                                "servicePort": 8080,
+                                "serverAddresses": []
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
