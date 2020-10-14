@@ -35,3 +35,9 @@ oc patch dns.operator/default --type='merge' -p "$(cat <<- EOF
       - nat64.murali722.myocp4.com
 EOF
 )"
+
+
+oc create secret generic bigip-login -n kube-system --from-literal=username=admin --from-literal=password=changepwd
+oc create serviceaccount k8s-bigip-ctlr -n kube-system
+oc create clusterrolebinding k8s-bigip-ctlr-clusteradmin --clusterrole=cluster-admin --serviceaccount=kube-system:k8s-bigip-ctlr
+
