@@ -283,13 +283,13 @@
     #    name: upstream_dns
     #  tags: upstream_dns_route
     
-    - name: Create static route to WSN_IR network
-      bigip_static_route:
-        destination: "{{ bigip_wsn_ir_route.address }}"
-        netmask: "{{ bigip_wsn_ir_route.netmask }}"
-        gateway_address: "{{ bigip_wsn_ir_route.gateway }}"
-        name: WSN_IR_IPV6_Route
-      tags: wsn_ir_ipv6_route
+#     - name: Create static route to WSN_IR network
+#       bigip_static_route:
+#         destination: "{{ bigip_wsn_ir_route.address }}"
+#         netmask: "{{ bigip_wsn_ir_route.netmask }}"
+#         gateway_address: "{{ bigip_wsn_ir_route.gateway }}"
+#         name: WSN_IR_IPV6_Route
+#       tags: wsn_ir_ipv6_route
     
     - name: Add DNS46 Virtual  Server
       bigip_virtual_server:
