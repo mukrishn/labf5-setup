@@ -20,9 +20,11 @@ Note: set BIGIP password in all places, grep and replace `changepwd`
 15. Create BIGIP VMs - `oc apply -f 70-vms.yml`
 ### BIGIP VM
 16. Wait untill VM mgmt IP is reachable from provisioner node and access F5 GUI from browser
-17. Run ansible play book to activate license and finish up ingress configuration - `ansible-playbook -i ansible-host -e @ansible-input.yml ansible-playbook` 
+17. Run ansible play book to activate license and finish up ingress configuration - `ansible-playbook -i ansible-host -e @ansible-input.yml ansible-playbook.yml` 
 ### CIS Controller
 18. Deploy BIGIP CIS controller pods - `oc apply -f 80-cis-deploy.yaml`
 ### Test setup
 19. Deploy test namespace, pods, service and as3 configmap - `oc apply -f 90-hello-world.yaml` 
 20. Access BIGIP GUI and check virtual servers created under AS3 partition and curl against virtual IP from provisioner
+### License deactivation
+21. Run - `ansible-playbook -i ansible-host ansible-revoke-playbook.yml`
