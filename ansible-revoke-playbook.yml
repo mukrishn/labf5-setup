@@ -1,0 +1,17 @@
+- name: Setting BIGIP basic configuration
+  hosts: [all]
+  gather_facts: false
+  environment:
+      F5_SERVER: "{{ ansible_host }}"
+      F5_USER: "admin"
+      F5_PASSWORD: "changepwd"
+      F5_VALIDATE_CERTS: "false"
+      F5_SERVER_PORT: 443
+  connection: local
+
+  tasks:
+    - name: License BIG-IP using a key
+      bigip_device_license:
+        accept_eula: true
+        license_key: "{{ license_key }}"
+        state: revoked
