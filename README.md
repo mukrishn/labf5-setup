@@ -1,5 +1,7 @@
 # labf5-setup
 Note: set BIGIP password in all places, grep and replace `changepwd`
+Doc - https://docs.google.com/document/d/1F5ytk1IKkrEAyrQFb83BSAKwGlHJ4vOWuxu9xKdMf1g/edit#heading=h.87va3vb0uof7
+
 ### Provisioner
 1. Configure Provision node for BIGIP mgmt VLAN - run `nmcli` commands to create interface with IPs. - `sudo bash 00-provnode-setup.sh` 
 ### Operators
