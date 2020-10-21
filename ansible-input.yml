@@ -8,7 +8,7 @@ bigip_namespace: "f5-lb"
 bigip_mcp_pool_name: "worker-lb"
 bigip_dv_accesskey: "" # not required - data volume secrets
 bigip_dv_secretkey: "" # not required - data volume secrets
-bigip_bridges: { "mgmt": { "interface": "ens2f0", "vlan_id": "100" }, "ha": { "interface": "ens2f0", "vlan_id": "101" } }
+bigip_bridges: { "mgmt": { "interface": "ens2f1", "vlan_id": "100" }, "ha": { "interface": "ens2f1", "vlan_id": "101" } }
 bigip_sriov_int: "ens2f1"
 bigip_sriov_network_ipam_address: "192.168.222.0/24" # BM external network
 bigip_sriov_network_ipam_gateway: "192.168.222.1" # GW of external network
